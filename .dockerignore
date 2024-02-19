@@ -1,0 +1,6 @@
+**/.git
+*
+!requirements
+!src
+!.env
+!logs

@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  output-api:
+    container_name: output-api
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    # restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../:/api
+    environment:
+      - development
+    env_file:
+      - ../.env
+    depends_on:
+      database:
+        condition: service_healthy
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    networks:
+      - dev_network
+
+  database:
+    container_name: database
+    hostname: citrosuco_db
+    # image: postgres:15-bookworm
+    image: postgis/postgis:16-3.4
+    # restart: always
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    env_file:
+      - ../.env
+    volumes:
+      - ./database-volume:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d dev_citrosuco -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dev_network
+
+networks:
+  dev_network:
+    name: dev_network
