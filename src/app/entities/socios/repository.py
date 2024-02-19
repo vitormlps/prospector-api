@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ### Built-in deps
+# ### Third-party deps
+# ### Local deps
+from ...entities.base.repository import BaseRepo
+from .model import Socios
+from .schema import SociosView, SociosCreate, SociosUpdate
+
+
+class SociosRepo(BaseRepo[Socios, SociosCreate, SociosUpdate]):
+    pass
+
+
+def socios_repo():
+    return SociosRepo(Socios)
