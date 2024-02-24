@@ -5,13 +5,13 @@
 # ### Third-party deps
 # ### Local deps
 from ...entities.base.repository import BaseRepo
-from .model import Paises
+from .model import Pais
 from .schema import PaisesView, PaisesCreate, PaisesUpdate
 
 
-class PaisesRepo(BaseRepo[Paises, PaisesCreate, PaisesUpdate]):
+class PaisesRepo(BaseRepo[Pais, PaisesCreate, PaisesUpdate]):
     pass
 
 
 def paises_repo():
-    return PaisesRepo(Paises)
+    return PaisesRepo(Pais)

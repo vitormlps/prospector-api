@@ -3,20 +3,22 @@
 
 # ### Built-in deps
 # ### Third-party deps
-from sqlalchemy import Column, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import UUID
 
 # ### Local deps
 from ..base.model import Base
+from ...utils.type_vars import TypeVars
 
 
 class SimplesNacional(Base):
-    opcao_pelo_simples = Column(String(), nullable=False)
-    data_opcao_simples = Column(DateTime, nullable=False)
-    data_exclusao_simples = Column(DateTime, nullable=False)
-    opcao_mei = Column(String(), nullable=True)
-    data_opcao_mei = Column(DateTime, nullable=False)
-    data_exclusao_mei = Column(DateTime, nullable=False)
+    opcao_simples: Mapped[bool] = mapped_column(nullable=False)
+    data_opcao_simples: Mapped[DateTime] = mapped_column(nullable=True)
+    data_exclusao_simples: Mapped[DateTime] = mapped_column(nullable=True)
+    opcao_mei: Mapped[bool] = mapped_column(nullable=False)
+    data_opcao_mei: Mapped[DateTime] = mapped_column(nullable=True)
+    data_exclusao_mei: Mapped[DateTime] = mapped_column(nullable=True)
 
-    cnpj_basico_id = Column(String(), ForeignKey("empresas.id"))
-    cnpj_basico = relationship("Empresas", back_populates="estabelecimentos", lazy="subquery")
+    empresa_id: Mapped[UUID] = mapped_column(ForeignKey("empresa.id"), nullable=False, index=True)
+    empresa: Mapped[TypeVars.Empresa] = relationship(back_populates="simples_nacional", lazy="subquery")

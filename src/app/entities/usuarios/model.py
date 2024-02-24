@@ -3,20 +3,21 @@
 
 # ### Built-in deps
 # ### Third-party deps
-from sqlalchemy import Column, String, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 
 # ### Local deps
 from ..base.model import Base
+from ...utils.type_vars import TypeVars
 
 
-class Usuarios(Base):
-    first_name = Column(String(255), nullable=False)
-    last_name = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=False)
-    password = Column(String(255), nullable=False)
-    is_active = Column(Boolean, default=True)
+class Usuario(Base):
+    first_name: Mapped[str] = mapped_column(nullable=False)
+    last_name: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+    is_active: Mapped[bool] = mapped_column(nullable=False)
 
-    permissoes_id = Column(UUID(as_uuid=True), ForeignKey("permissoes.id"), nullable=False)
-    permissoes = relationship("Permissoes", back_populates="usuarios", lazy="subquery")
+    permissoes_id: Mapped[UUID] = mapped_column(ForeignKey("permissao.id"), nullable=False)
+    permissoes: Mapped[TypeVars.Permissao] = relationship(back_populates="usuarios", lazy='subquery')

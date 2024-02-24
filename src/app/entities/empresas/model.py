@@ -2,27 +2,35 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
+from typing import List
+
 # ### Third-party deps
-from sqlalchemy import Column, String, Float, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import String, Float, ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import UUID
 
 # ### Local deps
 from ..base.model import Base
+from ...utils.type_vars import TypeVars
 
 
-class Empresas(Base):
-    cnpj_basico = Column(String(8), nullable=False, unique=True)
-    razao_social = Column(String(), nullable=False)
-    capital_social = Column(Float, nullable=False)
-    porte_empresa = Column(String(2), nullable=False)
-    ente_federativo_responsavel = Column(String(), nullable=True)
+class Empresa(Base):
+    cnpj_basico: Mapped[str] = mapped_column(String(8), nullable=False, unique=True, index=True)
+    razao_social: Mapped[str] = mapped_column(nullable=False)
+    capital_social: Mapped[float] = mapped_column(Float, nullable=False)
 
-    natureza_juridica_id = Column(String(), ForeignKey("natureza_juridica.id"))
-    natureza_juridica = relationship("NaturezasJuridicas", back_populates="empresas", lazy="subquery")
+    porte_empresa_id: Mapped[UUID] = mapped_column(ForeignKey("porte_empresa.id"), nullable=False)
+    porte_empresa: Mapped[TypeVars.PorteEmpresa] = relationship(lazy='subquery')
 
-    qualificacao_responsavel_id = Column(String(), ForeignKey("qualificacao_responsavel.id"))
-    qualificacao_responsavel = relationship("Qualificacoes", back_populates="empresas", lazy="subquery")
+    natureza_juridica_id: Mapped[UUID] = mapped_column(ForeignKey("natureza_juridica.id"), nullable=False)
+    natureza_juridica: Mapped[TypeVars.NaturezaJuridica] = relationship(lazy="subquery")
 
-    estabelecimento = relationship("Estabelecimentos", back_populates="empresas", lazy="subquery")
-    socios = relationship("Socios", back_populates="empresas", lazy="subquery")
-    simples = relationship("SimplesNacional", back_populates="empresas", lazy="subquery")
+    qualificacao_responsavel_id: Mapped[UUID] = mapped_column(ForeignKey("qualificacao_responsavel.id"), nullable=False)
+    qualificacao_responsavel: Mapped[TypeVars.Qualificacao] = relationship(lazy="subquery")
+
+    simples_nacional_id: Mapped[UUID] = mapped_column(ForeignKey("simples_nacional.id"), nullable=False)
+    simples_nacional: Mapped[TypeVars.SimplesNacional] = relationship(back_populates="empresa", lazy="subquery")
+
+    estabelecimentos: Mapped[List[TypeVars.Estabelecimento]] = relationship(back_populates="empresa", lazy="subquery")
+    
+    socios: Mapped[List[TypeVars.Socio]] = relationship(back_populates="empresa", lazy="subquery")

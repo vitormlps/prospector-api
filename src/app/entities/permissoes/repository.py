@@ -1,10 +1,17 @@
-from ..entities.base.repository import CRUDBase
-from .model import UserType
-from .schema import UserTypeCreate, UserTypeUpdate
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ### Built-in deps
+# ### Third-party deps
+# ### Local deps
+from ...entities.base.repository import BaseRepo
+from .model import Permissao
+from .schema import PermissoesView, PermissoesCreate, PermissoesUpdate
 
 
-class CRUDUserType(CRUDBase[UserType, UserTypeCreate, UserTypeUpdate]):
+class PermissoesRepo(BaseRepo[Permissao, PermissoesCreate, PermissoesUpdate]):
     pass
 
 
-user_type = CRUDUserType(UserType)
+def usuarios_repo():
+    return PermissoesRepo(Permissao)

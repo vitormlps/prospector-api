@@ -6,9 +6,10 @@ from datetime import datetime
 from uuid import uuid4 as uuid
 
 # ### Third-party deps
-from sqlalchemy import Column, DateTime
+from sqlalchemy import DateTime
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
 
 # ### Local deps
 from app.utils.parsers import camel_to_snake
@@ -19,8 +20,10 @@ class Base:
     @declared_attr
     def __tablename__(cls) -> str:
         return camel_to_snake(cls.__name__)
+    
+    __INDEX_SEQUENCE = "index_sequence"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid, unique=True)
+    id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, insert_default=uuid, unique=True)
 
-    created_at = Column(DateTime, nullable=False, default=datetime.now)
-    updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False, insert_default=datetime.now)
+    updated_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False, insert_default=datetime.now, onupdate=datetime.now)

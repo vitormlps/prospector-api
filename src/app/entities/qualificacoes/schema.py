@@ -1,47 +1,36 @@
-from typing import Optional, List
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ### Built-in deps
+from typing import Optional
 from datetime import datetime
 from uuid import UUID
 
+# ### Third-party deps
 from pydantic import BaseModel, Field
 
-from ..entities.mission.schema import MissionShow
-from ..entities.equipment.schema import EquipmentShow
+# ### Local deps
 
 
-class InspectionBase(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
-    description: Optional[str] = Field(min_length=1, max_length=200)
-    status: Optional[str] = Field(min_length=1, max_length=25)
-    type: str = Field(min_length=1, max_length=30)
-    started_at: Optional[datetime]
-    finished_at: Optional[datetime]
-    unit_id: int
-    user_id: UUID
+class QualificacoesBase(BaseModel):
+    codigo: str
+    descricao: str = Field(min_length=3)
 
-class InspectionCreate(InspectionBase):
+
+class QualificacoesCreate(QualificacoesBase):
     pass
 
 
-class InspectionUpdate(InspectionBase):
-    id: int
-    name: Optional[str]
-    type: Optional[str]
-    unit_id: Optional[int]
-    user_id: Optional[UUID]
+class QualificacoesUpdate(QualificacoesBase):
+    id: UUID
+    codigo: Optional[str]
+    descricao: Optional[str] = Field(min_length=3)
 
 
-class InspectionShow(InspectionBase):
-    id: int
-    missions: List[MissionShow]
-    equipments: Optional[List[EquipmentShow]]
+class QualificacoesView(QualificacoesBase):
+    id: UUID
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: datetime
 
     class Config:
         orm_mode = True
-
-
-class LastInspectionShow(InspectionBase):
-    id: int
-    created_at: datetime
-    updated_at: Optional[datetime]

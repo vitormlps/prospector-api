@@ -5,13 +5,13 @@
 # ### Third-party deps
 # ### Local deps
 from ...entities.base.repository import BaseRepo
-from .model import Estabelecimentos
+from .model import Estabelecimento
 from .schema import EstabelecimentosView, EstabelecimentosCreate, EstabelecimentosUpdate
 
 
-class EstabelecimentosRepo(BaseRepo[Estabelecimentos, EstabelecimentosCreate, EstabelecimentosUpdate]):
+class EstabelecimentosRepo(BaseRepo[Estabelecimento, EstabelecimentosCreate, EstabelecimentosUpdate]):
     pass
 
 
 def estabelecimentos_repo():
-    return EstabelecimentosRepo(Estabelecimentos)
+    return EstabelecimentosRepo(Estabelecimento)

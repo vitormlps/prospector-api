@@ -2,17 +2,20 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
+from typing import List
+
 # ### Third-party deps
-from sqlalchemy import Column, String
-# from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # ### Local deps
 from ..base.model import Base
+from ...utils.type_vars import TypeVars
 
 
-class Qualificacoes(Base):
-    codigo = Column(String(), nullable=False, unique=True)
-    descricao = Column(String(), nullable=False, unique=True)
+class Qualificacao(Base):
+    codigo: Mapped[str] = mapped_column(nullable=False, unique=True)
+    descricao: Mapped[str] = mapped_column(nullable=False)
 
-    # estabelecimentos = relationship("Estabelecimentos", back_populates="qualificacoes", lazy="subquery")
-    # socios = relationship("Socios", back_populates="qualificacoes", lazy="subquery")
+    empresas: Mapped[List[TypeVars.Empresa]] = relationship(back_populates="qualificacao_responsavel", lazy="subquery")
+
+    representantes_legais: Mapped[List[TypeVars.RepresentanteLegal]] = relationship(back_populates="qualificacao", lazy="subquery")

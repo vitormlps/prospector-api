@@ -5,13 +5,13 @@
 # ### Third-party deps
 # ### Local deps
 from ...entities.base.repository import BaseRepo
-from .model import Motivos
+from .model import Motivo
 from .schema import MotivosView, MotivosCreate, MotivosUpdate
 
 
-class MotivosRepo(BaseRepo[Motivos, MotivosCreate, MotivosUpdate]):
+class MotivosRepo(BaseRepo[Motivo, MotivosCreate, MotivosUpdate]):
     pass
 
 
 def motivos_repo():
-    return MotivosRepo(Motivos)
+    return MotivosRepo(Motivo)

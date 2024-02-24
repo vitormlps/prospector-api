@@ -5,13 +5,13 @@
 # ### Third-party deps
 # ### Local deps
 from ...entities.base.repository import BaseRepo
-from .model import NaturezasJuridicas
+from .model import NaturezaJuridica
 from .schema import NaturezasJuridicasView, NaturezasJuridicasCreate, NaturezasJuridicasUpdate
 
 
-class NaturezasJuridicasRepo(BaseRepo[NaturezasJuridicas, NaturezasJuridicasCreate, NaturezasJuridicasUpdate]):
+class NaturezasJuridicasRepo(BaseRepo[NaturezaJuridica, NaturezasJuridicasCreate, NaturezasJuridicasUpdate]):
     pass
 
 
 def naturezas_juridicas_repo():
-    return NaturezasJuridicasRepo(NaturezasJuridicas)
+    return NaturezasJuridicasRepo(NaturezaJuridica)

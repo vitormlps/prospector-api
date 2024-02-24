@@ -1,15 +1,19 @@
-from sqlalchemy.orm import Session
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-from ..entities.base.repository import CRUDBase
-from .model import User
-from .schema import UserCreate, UserUpdate
-from ..utils.encryptors import encrypt_pw
+# ### Built-in deps
+# ### Third-party deps
+# ### Local deps
+from ...entities.base.repository import BaseRepo
+from .model import Usuario
+from .schema import UsuariosView, UsuariosCreate, UsuariosUpdate
+from ...utils.encryptors import encrypt_pw
 
 
-class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-    def create(self, db: Session, *, obj_in: UserCreate) -> User:
+class UsuariosRepo(BaseRepo[Usuario, UsuariosCreate, UsuariosUpdate]):
+    def create(self, db, *, obj_in: UsuariosCreate) -> Usuario:
         obj_in.password = encrypt_pw(obj_in.password)
-        db_obj = User(**obj_in.dict())
+        db_obj = Usuario(**obj_in.dict())
         
         db.add(db_obj)
         db.commit()
@@ -18,10 +22,11 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return db_obj
 
 
-    def update(self, db: Session, *, db_obj: User, obj_in: UserUpdate) -> User:
+    def update(self, db, *, db_obj: Usuario, obj_in: UsuariosUpdate) -> Usuario:
         obj_in.password = encrypt_pw(obj_in.password)
+        
         return super().update(db=db, db_obj=db_obj, obj_in=obj_in)
 
 
-user = CRUDUser(User)
-
+def usuarios_repo():
+    return UsuariosRepo(Usuario)

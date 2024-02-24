@@ -2,19 +2,18 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
+from typing import List
+
 # ### Third-party deps
-from sqlalchemy import Column, String
-# from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # ### Local deps
 from ..base.model import Base
+from ...utils.type_vars import TypeVars
 
 
-class CNAEs(Base):
-    # __INDEX_SEQUENCE = "cnaes_index_sequence"
+class CNAE(Base):
+    codigo: Mapped[str] = mapped_column(nullable=False, unique=True, index=True)
+    descricao: Mapped[str] = mapped_column(nullable=False)
 
-    codigo = Column(String(), nullable=False, unique=True)
-    descricao = Column(String(), nullable=False, unique=True)
-
-    # estabelecimentos = relationship("Estabelecimentos", back_populates="cnaes", lazy="subquery")
-    # socios = relationship("Socios", back_populates="cnaes", lazy="subquery")
+    estabelecimentos: Mapped[List[TypeVars.Estabelecimento]] = relationship(back_populates="cnae_fiscal_principal", lazy="subquery")

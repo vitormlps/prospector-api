@@ -1,26 +1,40 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ### Built-in deps
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 
-from pydantic import BaseModel, Field
+# ### Third-party deps
+from pydantic import BaseModel
+
+# ### Local deps
 
 
-class UserTypeModel(BaseModel):
-    name: str = Field(min_length=1, max_length=30)
+class PermissoesBase(BaseModel):
+    tipo: str
+    can_view: bool
+    can_update: bool
+    can_delete: bool
 
 
-class UserTypeCreate(UserTypeModel):
+class PermissoesCreate(PermissoesBase):
     pass
 
 
-class UserTypeUpdate(UserTypeModel):
-    id: int
-    name: Optional[str]
+class PermissoesUpdate(PermissoesBase):
+    id: UUID
+    tipo: Optional[str]
+    can_view: Optional[bool]
+    can_update: Optional[bool]
+    can_delete: Optional[bool]
 
 
-class UserTypeShow(UserTypeModel):
+class PermissoesView(PermissoesBase):
     id: int
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: datetime
 
     class Config:
         orm_mode = True

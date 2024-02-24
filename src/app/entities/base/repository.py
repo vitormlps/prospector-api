@@ -1,12 +1,19 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+# ### Built-in deps
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from uuid import UUID
+
+# ### Third-party deps
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
 
-from app.entities.base.model import Base
+# ### Local deps
+from .model import Base
 from .filters import Filter, FilterJoin, FilterDateBetween
 
 
@@ -15,9 +22,16 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+class BaseRepo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
+
+
+    def get_index_sequence(self, db: Session):
+        db_data = db.execute(f"SELECT nextval('{self.__INDEX_SEQUENCE}');")
+        data = [dict(data) for data in db_data]
+        return data[0]["nextval"]
+
 
     def get_all_by_join(
         self,

@@ -5,19 +5,13 @@
 # ### Third-party deps
 # ### Local deps
 from ...entities.base.repository import BaseRepo
-from .model import CNAEs
+from .model import CNAE
 from .schema import CNAEsView, CNAEsCreate, CNAEsUpdate
 
 
-class CNAEsRepo(BaseRepo[CNAEs, CNAEsCreate, CNAEsUpdate]):
+class CNAEsRepo(BaseRepo[CNAE, CNAEsCreate, CNAEsUpdate]):
     pass
-
-    # @staticmethod
-    # def get_index_sequence(session):
-    #     db_data = session.execute(f"SELECT nextval('{CNAEs.__INDEX_SEQUENCE}');")
-    #     data = [dict(data) for data in db_data]
-    #     return data[0]["nextval"]
 
 
 def cnaes_repo():
-    return CNAEsRepo(CNAEs)
+    return CNAEsRepo(CNAE)

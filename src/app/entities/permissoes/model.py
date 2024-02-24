@@ -2,15 +2,20 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
+from typing import List
+
 # ### Third-party deps
-from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # ### Local deps
 from ..base.model import Base
+from ...utils.type_vars import TypeVars
 
 
 class Permissoes(Base):
-    name = Column(String(), nullable=False)
+    tipo: Mapped[str] = mapped_column(nullable=False, insert_default="standard")
+    can_view: Mapped[bool] = mapped_column(nullable=False, insert_default=True)
+    can_update: Mapped[bool] = mapped_column(nullable=False, insert_default=True)
+    can_delete: Mapped[bool] = mapped_column(nullable=False, insert_default=False)
 
-    usuarios = relationship('Usuarios', back_populates='permissao', cascade="all, delete-orphan")
+    usuarios: Mapped[List[TypeVars.Usuario]] = relationship(back_populates="permissao", lazy="subquery")
