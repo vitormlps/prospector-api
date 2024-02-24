@@ -9,6 +9,7 @@ if __name__ == "__main__":
     # ### Local deps
     from app.config import get_app_config
     from app.setup import setup_app, setup_database, setup_helpers
+    from app.middleware.rf_data_manager.run import run_rf_data_collection
     from app.helpers import parse_arguments
 
 
@@ -18,5 +19,7 @@ if __name__ == "__main__":
     app = setup_app(settings)
     setup_database(settings)
     setup_helpers(settings)
+
+    run_rf_data_collection(settings)
 
     uvicorn.run(app, host=args.host, port=args.port, reload=args.reload)

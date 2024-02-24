@@ -98,7 +98,7 @@ class ReceitaFederalDataManager:
             settings.RECEITA_FEDERAL_MAIN_UPDATE_FIELD
         )
         if not is_diff:
-            return None
+            return
 
         self.create_folder(settings.DOWNLOADED_FILES_PATH)
 
