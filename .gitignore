@@ -48,6 +48,10 @@ obfuscated/
 DOWNLOADED_FILES/
 EXTRACTED_FILES/
 SELECTED_FILES/
+src/v2/
+test*
+pgsql*
+run.sh
 
 # Environment files
 .env
