@@ -8,10 +8,11 @@ import inspect
 from fastapi import APIRouter
 
 # ### Local deps
-from app import routers
+from app.routers import routes
 
 def get_routers():
-    return list(filter(lambda x: inspect.ismodule(x[1]), inspect.getmembers(routers)))
+    return list(filter(lambda x: inspect.ismodule(x[1]), inspect.getmembers(routes)))
+
 
 def get_api_router():
     api_routes = get_routers()
