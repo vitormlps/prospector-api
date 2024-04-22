@@ -29,6 +29,7 @@ class QualificacoesUpdate(QualificacoesBase):
 
 class QualificacoesView(QualificacoesBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

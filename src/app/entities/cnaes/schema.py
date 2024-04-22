@@ -10,7 +10,6 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 # ### Local deps
-# from ..estabelecimentos.schema import EstabelecimentosView
 
 
 class CNAEsBase(BaseModel):
@@ -30,7 +29,7 @@ class CNAEsUpdate(CNAEsBase):
 
 class CNAEsView(CNAEsBase):
     id: UUID
-    # estabelecimentos: List[EstabelecimentosView]
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

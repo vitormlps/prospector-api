@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 # ### Local deps
 from ..qualificacoes.schema import QualificacoesView
+from ..base.schema import DefaultQueryFilter
 
 
 class RepresentantesLegaisBase(BaseModel):
@@ -32,17 +33,25 @@ class RepresentantesLegaisUpdate(RepresentantesLegaisBase):
 
 class RepresentantesLegaisView(RepresentantesLegaisBase):
     id: UUID
-    qualificacao: QualificacoesView
+    cpf: str
+    nome: str
+    # qualificacao: QualificacoesView
     created_at: datetime
     updated_at: datetime
 
-    def dict(self, **kwargs):
-        kwargs['exclude'] = {'qualificacao_id'}
-        return super().dict(**kwargs)
+    # def dict(self, **kwargs):
+    #     kwargs['exclude'] = {'qualificacao_id'}
+    #     return super().dict(**kwargs)
 
-    def json(self, **kwargs):
-        kwargs['exclude'] = {'qualificacao_id'}
-        return super().json(**kwargs)
+    # def json(self, **kwargs):
+    #     kwargs['exclude'] = {'qualificacao_id'}
+    #     return super().json(**kwargs)
 
     class Config:
         orm_mode = True
+
+
+class RepresentantesLegaisFilter(DefaultQueryFilter):
+    cpf: Optional[str]
+    nome: Optional[str]
+    qualificacao_id: Optional[UUID]

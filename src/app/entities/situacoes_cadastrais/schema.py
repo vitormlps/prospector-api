@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 
 
 class SituacoesCadastraisBase(BaseModel):
-    codigo: str = Field(min_length=2, max_length=2)
+    codigo: str
     descricao: str = Field(min_length=3)
 
 
@@ -23,12 +23,13 @@ class SituacoesCadastraisCreate(SituacoesCadastraisBase):
 
 class SituacoesCadastraisUpdate(SituacoesCadastraisBase):
     id: UUID
-    codigo: Optional[str] = Field(min_length=2, max_length=2)
+    codigo: Optional[str]
     descricao: Optional[str] = Field(min_length=3)
 
 
 class SituacoesCadastraisView(SituacoesCadastraisBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

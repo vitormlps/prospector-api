@@ -12,24 +12,21 @@ from pydantic import BaseModel, Field
 # ### Local deps
 
 
-class MunicipiosBase(BaseModel):
-    codigo: str
-    descricao: str = Field(min_length=3)
+class VersionamentosBase(BaseModel):
+    rf_last_update: str = Field(min_length=19, max_length=19)
 
 
-class MunicipiosCreate(MunicipiosBase):
+class VersionamentosCreate(VersionamentosBase):
     pass
 
 
-class MunicipiosUpdate(MunicipiosBase):
+class VersionamentosUpdate(VersionamentosBase):
     id: UUID
-    codigo: Optional[str]
-    descricao: Optional[str] = Field(min_length=3)
+    rf_last_update: str = Field(min_length=19, max_length=19)
 
 
-class MunicipiosView(MunicipiosBase):
+class VersionamentosView(VersionamentosBase):
     id: UUID
-    descricao: str
     created_at: datetime
     updated_at: datetime
 

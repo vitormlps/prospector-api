@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
-from typing import Generator
-
 # ### Third-party deps
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,14 +20,16 @@ def set_database_engine(env, db_uri):
             db_uri, 
             pool_pre_ping=True, 
             pool_recycle=60, 
-            ignore_no_transaction_on_rollback=True
+            pool_size=50,
+            max_overflow=50,
         )
     else:
         Database.engine = create_engine(
             db_uri, 
             pool_pre_ping=True, 
-            ignore_no_transaction_on_rollback=True, 
-            isolation_level="AUTOCOMMIT"
+            # isolation_level="AUTOCOMMIT",
+            pool_size=50,
+            max_overflow=50,
         )
 
 
@@ -42,6 +42,10 @@ def set_db_connection(env, db_uri):
     set_db_local_session()
 
 
-def get_db_local_session() -> Generator:
+def get_db_engine():
+    return Database.engine
+
+
+def get_db_local_session():
     with Database.local_session() as session:
         yield session

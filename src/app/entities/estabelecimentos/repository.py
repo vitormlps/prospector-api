@@ -6,7 +6,7 @@
 # ### Local deps
 from ...entities.base.repository import BaseRepo
 from .model import Estabelecimento
-from .schema import EstabelecimentosView, EstabelecimentosCreate, EstabelecimentosUpdate
+from .schema import EstabelecimentosView, EstabelecimentosCreate, EstabelecimentosUpdate, EstabelecimentosFilter
 
 
 class EstabelecimentosRepo(BaseRepo[Estabelecimento, EstabelecimentosCreate, EstabelecimentosUpdate]):

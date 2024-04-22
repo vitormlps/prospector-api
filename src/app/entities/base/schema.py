@@ -7,18 +7,19 @@ from datetime import datetime
 from uuid import UUID
 
 # ### Third-party deps
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # ### Local deps
 
 
-# class BaseSchema(BaseModel):
-#     id: UUID
-#     created_at: datetime
-#     updated_at: datetime
-
-
 class DefaultQueryFilter(BaseModel):
-    unit_id: int
-    skip: Optional[int]
-    limit: Optional[int]
+    id: Optional[UUID]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+    skip: Optional[int] = Field(default=0)
+    limit: Optional[int] = Field(default=0)
+
+
+class BaseFilter(DefaultQueryFilter):
+    codigo: Optional[str]
+    descricao: Optional[str]

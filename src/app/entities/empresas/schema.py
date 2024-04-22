@@ -16,16 +16,16 @@ from ..qualificacoes.schema import QualificacoesView
 from ..simples_nacional.schema import SimplesNacionalView
 from ..estabelecimentos.schema import EstabelecimentosView
 from ..socios.schema import SociosView
+from ..base.schema import DefaultQueryFilter
 
 
 class EmpresasBase(BaseModel):
     cnpj_basico: str = Field(min_length=8, max_length=8)
     razao_social: str = Field(min_length=3)
-    capital_social: float = Field(decimal_places=2)
+    capital_social: float
     porte_empresa_id: UUID
     natureza_juridica_id: UUID
     qualificacao_responsavel_id: UUID
-    simples_nacional_id: UUID
 
 
 class EmpresasCreate(EmpresasBase):
@@ -36,31 +36,42 @@ class EmpresasUpdate(EmpresasBase):
     id: UUID
     cnpj_basico: Optional[str] = Field(min_length=8, max_length=8)
     razao_social: Optional[str] = Field(min_length=3)
-    capital_social: Optional[float] = Field(decimal_places=2)
+    capital_social: Optional[float]
     porte_empresa_id: Optional[UUID]
     natureza_juridica_id: Optional[UUID]
     qualificacao_responsavel_id: Optional[UUID]
-    simples_nacional_id: Optional[UUID]
 
 
 class EmpresasView(EmpresasBase):
     id: UUID
-    porte_empresa: PortesEmpresasView
-    natureza_juridica: NaturezasJuridicasView
-    qualificacao_responsavel: QualificacoesView
-    simples_nacional: SimplesNacionalView
-    estabelecimentos: List[EstabelecimentosView]
-    socios: List[SociosView]
+    cnpj_basico: str
+    razao_social: str
+    # porte_empresa: PortesEmpresasView
+    # natureza_juridica: NaturezasJuridicasView
+    # qualificacao_responsavel: QualificacoesView
+    # simples_nacional: SimplesNacionalView
+    # estabelecimentos: List[EstabelecimentosView]
+    # socios: List[SociosView]
     created_at: datetime
     updated_at: datetime
 
-    def dict(self, **kwargs):
-        kwargs['exclude'] = {'porte_empresa_id', 'natureza_juridica_id', 'qualificacao_responsavel_id', 'simples_nacional_id'}
-        return super().dict(**kwargs)
+    # def dict(self, **kwargs):
+    #     kwargs['exclude'] = {'porte_empresa_id', 'natureza_juridica_id', 'qualificacao_responsavel_id'}
+    #     return super().dict(**kwargs)
 
-    def json(self, **kwargs):
-        kwargs['exclude'] = {'porte_empresa_id', 'natureza_juridica_id', 'qualificacao_responsavel_id', 'simples_nacional_id'}
-        return super().json(**kwargs)
+    # def json(self, **kwargs):
+    #     kwargs['exclude'] = {'porte_empresa_id', 'natureza_juridica_id', 'qualificacao_responsavel_id'}
+    #     return super().json(**kwargs)
 
     class Config:
         orm_mode = True
+
+
+class EmpresasFilter(DefaultQueryFilter):
+    cnpj_basico: Optional[str]
+    razao_social: Optional[str]
+    capital_social: Optional[float]
+    cnae_id: Optional[str]
+    porte_empresa_id: Optional[str]
+    natureza_juridica_id: Optional[str]
+    situacao_cadastral_id: Optional[str]

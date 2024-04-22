@@ -10,13 +10,14 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 # ### Local deps
-from ..estabelecimentos.schema import EstabelecimentosView
+from ..base.schema import DefaultQueryFilter
 
 
 class ContatosBase(BaseModel):
     tipo: str = Field(min_length=3)
     descricao: str = Field(min_length=3)
     estabelecimento_id: UUID
+
 
 class ContatosCreate(ContatosBase):
     pass
@@ -31,17 +32,16 @@ class ContatosUpdate(ContatosBase):
 
 class ContatosView(ContatosBase):
     id: UUID
-    estabelecimento: EstabelecimentosView
+    tipo: str
+    descricao: str
     created_at: datetime
     updated_at: datetime
 
-    def dict(self, **kwargs):
-        kwargs['exclude'] = {'estabelecimento_id'}
-        return super().dict(**kwargs)
-
-    def json(self, **kwargs):
-        kwargs['exclude'] = {'estabelecimento_id'}
-        return super().json(**kwargs)
-
     class Config:
         orm_mode = True
+
+
+class ContatosFilter(DefaultQueryFilter):
+    tipo: Optional[str]
+    descricao: Optional[str]
+    estabelecimento_id: Optional[UUID]

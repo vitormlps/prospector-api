@@ -6,7 +6,7 @@
 # ### Local deps
 from ...entities.base.repository import BaseRepo
 from .model import SimplesNacional
-from .schema import SimplesNacionalView, SimplesNacionalCreate, SimplesNacionalUpdate
+from .schema import SimplesNacionalView, SimplesNacionalCreate, SimplesNacionalUpdate, SimplesNacionalFilter
 
 
 class SimplesNacionalRepo(BaseRepo[SimplesNacional, SimplesNacionalCreate, SimplesNacionalUpdate]):

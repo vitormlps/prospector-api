@@ -6,7 +6,7 @@
 # ### Local deps
 from ...entities.base.repository import BaseRepo
 from .model import Logradouro
-from .schema import LogradourosView, LogradourosCreate, LogradourosUpdate
+from .schema import LogradourosView, LogradourosCreate, LogradourosUpdate, LogradourosFilter
 
 
 class LogradourosRepo(BaseRepo[Logradouro, LogradourosCreate, LogradourosUpdate]):

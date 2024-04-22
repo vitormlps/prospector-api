@@ -6,12 +6,12 @@
 # ### Local deps
 from ...entities.base.repository import BaseRepo
 from .model import RepresentanteLegal
-from .schema import RepresentantesLegaisView, RepresentantesLegaisCreate, RepresentantesLegaisUpdate
+from .schema import RepresentantesLegaisView, RepresentantesLegaisCreate, RepresentantesLegaisUpdate, RepresentantesLegaisFilter
 
 
 class RepresentantesLegaisRepo(BaseRepo[RepresentanteLegal, RepresentantesLegaisCreate, RepresentantesLegaisUpdate]):
     pass
 
 
-def RepresentantesLegais_repo():
+def representantes_legais_repo():
     return RepresentantesLegaisRepo(RepresentanteLegal)

@@ -13,5 +13,5 @@ class PermissoesRepo(BaseRepo[Permissao, PermissoesCreate, PermissoesUpdate]):
     pass
 
 
-def usuarios_repo():
+def permissoes_repo():
     return PermissoesRepo(Permissao)

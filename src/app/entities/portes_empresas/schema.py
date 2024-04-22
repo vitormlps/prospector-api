@@ -29,6 +29,7 @@ class PortesEmpresasUpdate(PortesEmpresasBase):
 
 class PortesEmpresasView(PortesEmpresasBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

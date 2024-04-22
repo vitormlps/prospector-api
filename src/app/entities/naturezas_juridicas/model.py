@@ -2,18 +2,17 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
-from typing import List
-
 # ### Third-party deps
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped, mapped_column, WriteOnlyMapped
 
 # ### Local deps
 from ..base.model import Base
-from ...utils.type_vars import TypeVars
+from ..empresas.model import Empresa
 
 
 class NaturezaJuridica(Base):
     codigo: Mapped[str] = mapped_column(nullable=False, unique=True)
     descricao: Mapped[str] = mapped_column(nullable=False)
 
-    empresas: Mapped[List[TypeVars.Empresa]] = relationship(back_populates="natureza_juridica", lazy="subquery")
+    # empresas = relationship("Empresa", back_populates="natureza_juridica", lazy="subquery")
+    empresas: WriteOnlyMapped["Empresa"] = relationship("Empresa", lazy="subquery")

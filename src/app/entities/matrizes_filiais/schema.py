@@ -27,8 +27,9 @@ class MatrizesFiliaisUpdate(MatrizesFiliaisBase):
     descricao: Optional[str] = Field(min_length=3)
 
 
-class MatrizesFiliaisShow(MatrizesFiliaisBase):
+class MatrizesFiliaisView(MatrizesFiliaisBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

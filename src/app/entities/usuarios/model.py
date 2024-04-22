@@ -9,7 +9,6 @@ from sqlalchemy.dialects.postgresql import UUID
 
 # ### Local deps
 from ..base.model import Base
-from ...utils.type_vars import TypeVars
 
 
 class Usuario(Base):
@@ -19,5 +18,5 @@ class Usuario(Base):
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(nullable=False)
 
-    permissoes_id: Mapped[UUID] = mapped_column(ForeignKey("permissao.id"), nullable=False)
-    permissoes: Mapped[TypeVars.Permissao] = relationship(back_populates="usuarios", lazy='subquery')
+    permissoes_id: Mapped[UUID] = mapped_column(ForeignKey("permissoes.id"), nullable=False)
+    permissoes = relationship("Permissoes", back_populates="usuarios", lazy='subquery')

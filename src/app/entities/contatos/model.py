@@ -9,7 +9,6 @@ from sqlalchemy.dialects.postgresql import UUID
 
 # ### Local deps
 from ..base.model import Base
-from ...utils.type_vars import TypeVars
 
 
 class Contato(Base):
@@ -17,4 +16,4 @@ class Contato(Base):
     descricao: Mapped[str] = mapped_column(nullable=False)
 
     estabelecimento_id: Mapped[UUID] = mapped_column(ForeignKey("estabelecimento.id"), nullable=False, index=True)
-    estabelecimento: Mapped[TypeVars.Estabelecimento] = relationship(back_populates="contatos", lazy='subquery')
+    # estabelecimento = relationship("Estabelecimento", back_populates="contatos", lazy='subquery')

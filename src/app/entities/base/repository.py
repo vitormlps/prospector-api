@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Dict, Generic, List, Optional, Type, TypeVar
 from uuid import UUID
 
 # ### Third-party deps
-from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, text, select, insert, update, delete, Delete
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import NoResultFound
 
 # ### Local deps
+from app.helpers import Logger
+from app.database.connection import get_db_local_session, get_db_engine
 from .model import Base
-from .filters import Filter, FilterJoin, FilterDateBetween
 
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -24,143 +24,180 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 class BaseRepo(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
+        self._logger = Logger().get_logger()
+
+        self.session: Session = next(get_db_local_session())
         self.model = model
 
 
-    def get_index_sequence(self, db: Session):
-        db_data = db.execute(f"SELECT nextval('{self.__INDEX_SEQUENCE}');")
+    def get_index_sequence(self):
+        db_data = self.session.execute(text("SELECT nextval(:index_seq);"), index_seq=self.__INDEX_SEQUENCE)
         data = [dict(data) for data in db_data]
         return data[0]["nextval"]
 
 
-    def get_all_by_join(
-        self,
-        db: Session,
-        filters: List[Filter] = None,
-        filters_join: List[FilterJoin] = None,
-        filter_date: FilterDateBetween = None,
-        order_by=None,
-    ):
-        query_filters = []
+    def __qualify_filters(self, filters, skip, limit):
 
-        if filters is not None:
-            for filter in filters:
-                filter_conditions = [
-                    getattr(self.model, filter.key) == value for value in filter.values
-                ]
-                query_filters.append(or_(*filter_conditions))
-        query_filters = and_(*query_filters)
-
-        query = db.query(self.model)
-
-        if filters_join is not None:
-            for filter in filters_join:
-                query = query.join(filter.class_, filter.class_attr == filter.join_attr)
-                filter_conditions = (
-                    [
-                        getattr(filter.class_, filter.class_key) == value
-                        for value in filter.values
-                    ]
-                    if filter.values
-                    else []
-                )
-                query_filters = and_(query_filters, or_(*filter_conditions))
-
-        query = query.filter(query_filters)
-
-        if filter_date is not None:
-            query = query.filter(
-                filter_date.key.between(filter_date.start, filter_date.end)
-            )
-
-        return query.order_by(order_by).all()
-
-
-    def get_by_and(self, db: Session, filters: dict) -> Optional[ModelType]:
-        filter = []
-        for k, v in filters.items():
-            if isinstance(v, tuple):
-                filter.append(getattr(self.model, k).in_(v))
-            else:
-                filter.append(getattr(self.model, k) == v)
-        
-        return db.query(self.model).filter(*filter).first()
-
-
-    def get_all_by(self, db: Session, filters: BaseModel | Dict, skip: int = 0, limit: int = 100) -> Optional[List[ModelType]]:
         if isinstance(filters, BaseModel):
             skip, limit = filters.skip, filters.limit
             filters = filters.dict(exclude_none=True, exclude={'skip', 'limit'})
-        return db.query(self.model).filter_by(**filters).order_by(self.model.id).offset(skip).limit(limit).all()
-    
+        
+        else:
+            skip, limit = filters.pop("skip"), filters.pop("limit")
+            temp_filters = filters.copy()
+            [filters.pop(key) for key, value in temp_filters.items() if value is None]
 
-    def get_by(self, db: Session, filters: dict) -> Optional[ModelType]:
-        return db.query(self.model).filter_by(**filters)
-
-
-    def get_all(self, db: Session, *, skip: int = 0, limit: int = 100, no_limit: bool = False) -> Optional[List[ModelType]]:
-        query = db.query(self.model).order_by(self.model.id)
-        if not no_limit:
-            query = query.offset(skip).limit(limit)
-        return query.all()
+        return filters, skip, limit
 
 
-    def get(self, db: Session, id: Union[int, str]) -> Optional[ModelType]:
-        return db.query(self.model).filter(self.model.id == id).first()
-    
-    def get_or_404(self, db: Session, id: Union[int, str]) -> Optional[ModelType]:
-        db_query = db.query(self.model).filter(self.model.id == id).first()
-        if not db_query:
-            raise HTTPException(404, f"{self.model.__name__} not found")
-        return db_query
+    def get_all_by(self, 
+            filters: BaseModel | Dict, 
+            order_by: str = "created_at", 
+            skip: int = 0, 
+            limit: int = 0
+        ) -> Optional[List[ModelType]]:
 
-    def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
-        obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)
+        filters, skip, limit = self.__qualify_filters(filters, skip, limit)
+
+        query = select(self.model).filter_by(**filters).order_by(order_by)
+
+        if skip != 0:
+            query = query.offset(skip)
+        
+        if limit != 0:
+            query = query.limit(limit)
+
+        return self.execute_query_all(query)
+
+
+    def get(self, id: UUID) -> Optional[ModelType]:
+        query = select(self.model).where(self.model.id == id)
+
+        return self.execute_query_single(query)
+
+
+    def get_by(self, filters: BaseModel) -> Optional[ModelType]:
+        filters, _, _ = self.__qualify_filters(filters, 0, 0)
+        query = select(self.model).filter_by(**filters)
+
+        return self.execute_query_single(query)
+
+
+    def create(self, payload, commit=True) -> ModelType:
+        query = insert(self.model).values(**payload).returning(self.model)
+
+        if commit:
+            return self.execute_transaction(query)
+        
+        return self.execute_query_single(query)
+
+
+    def update(self, id: UUID, payload, commit=True) -> ModelType:
+        query = update(self.model).where(self.model.id == id).values(**payload).returning(self.model)
+        
+        if commit:
+            return self.execute_transaction(query)
+        
+        return self.execute_query_single(query)
+
+
+    def remove(self, id: UUID, commit=True) -> Optional[bool]:
+        query = delete(self.model).where(self.model.id == id)
+        
+        if commit:
+            return self.execute_transaction(query)
+        
+        return self.execute_query_single(query)
+
+
+    def count(self) -> int:
+        result = 0
 
         try:
-            db.add(db_obj)
-        except HTTPException as err:
-            raise err
+            result = self.session.execute(
+                text(f"SELECT COUNT(id) FROM {self.model.__tablename__};"), 
+            ).one()[0]
+
         except Exception as err:
-            raise HTTPException(500, str(err))
+            self._logger.debug(f"Error while counting: {err}")
 
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-
-    def create_with_association(self, db: Session, obj_in: CreateSchemaType) -> ModelType:
-        db_obj = self.model(**obj_in.dict())
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        finally:
+            return result
 
 
-    def update(self, db: Session, *, id: Union[int, str], 
-        obj_in: Union[UpdateSchemaType, Dict[str, Any]],
-    ) -> ModelType:
-        db_obj = self.get(db, id)
-        obj_data = jsonable_encoder(db_obj)
+    def execute_query_all(self, query):
+        results = None
 
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            update_data = obj_in.dict(exclude_unset=True)
+        try:
+            results = self.session.execute(query).all()
+            results = [result[0] for result in results]
+
+        except NoResultFound:
+            self._logger.warning("No result found")
+
+        except Exception as err:
+            self._logger.error(f"Error with {self.model}: {err}")
         
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
+        # self.close_session()
+        return results
+
+
+    def execute_query_single(self, query):
+        result = None
+
+        try:
+            if isinstance(query, Delete):
+                self.session.execute(query)
+                result = True
+            else:
+                result = self.session.execute(query).one()[0]
         
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
+        except NoResultFound:
+            self._logger.debug("No result found")
+
+        except Exception as err:
+            self._logger.debug(f"Error with {self.model}: {err}")
+
+        return result
 
 
-    def remove(self, db: Session, *, id: Union[int, str]) -> ModelType:
-        db_obj = self.get(db, id)
-        db.delete(db_obj)
-        db.commit()
-        return db_obj
+    def execute_transaction(self, query):
+        result = None
+
+        try:
+            self.session.begin()
+
+            if isinstance(query, Delete):
+                self.session.execute(query)
+                result = True
+            else:
+                result = self.session.execute(query).one()[0]
+
+            self.session.commit()
+
+        except NoResultFound:
+            self._logger.debug("No result found")
+            self.session.rollback()
+
+        except Exception as err:
+            self._logger.debug(f"Error with {self.model}: {err}")
+            self.session.rollback()
+
+        return result
+
+
+    def close_session(self):
+        self.session.close()
+
+
+def create_all():
+    Base.metadata.create_all(bind=get_db_engine())
+
+
+def drop_all():
+    Base.metadata.drop_all(bind=get_db_engine())
+
+
+def reset_db():
+    drop_all()
+    create_all()

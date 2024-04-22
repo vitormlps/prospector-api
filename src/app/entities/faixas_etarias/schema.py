@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 from uuid import UUID
 
@@ -10,7 +10,6 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 # ### Local deps
-from ..socios.schema import SociosView
 
 
 class FaixasEtariasBase(BaseModel):
@@ -29,8 +28,8 @@ class FaixasEtariasUpdate(FaixasEtariasBase):
 
 
 class FaixasEtariasView(FaixasEtariasBase):
-    id: int
-    socios: List[SociosView]
+    id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 class PaisesBase(BaseModel):
     codigo: str
-    nome: str = Field(min_length=3)
+    descricao: str = Field(min_length=3)
 
 
 class PaisesCreate(PaisesBase):
@@ -24,11 +24,12 @@ class PaisesCreate(PaisesBase):
 class PaisesUpdate(PaisesBase):
     id: UUID
     codigo: Optional[str]
-    nome: Optional[str] = Field(min_length=3)
+    descricao: Optional[str] = Field(min_length=3)
 
 
 class PaisesView(PaisesBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

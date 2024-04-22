@@ -10,7 +10,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 # ### Local deps
-from ..empresas.schema import EmpresasView
+from ..base.schema import DefaultQueryFilter
 
 
 class SimplesNacionalBase(BaseModel):
@@ -20,7 +20,7 @@ class SimplesNacionalBase(BaseModel):
     opcao_mei: bool
     data_opcao_mei: Optional[datetime]
     data_exclusao_mei: Optional[datetime]
-    empresa_id: UUID
+    empresa_cnpj: str
 
 
 class SimplesNacionalCreate(SimplesNacionalBase):
@@ -31,22 +31,23 @@ class SimplesNacionalUpdate(SimplesNacionalBase):
     id: UUID
     opcao_simples: Optional[bool]
     opcao_mei: Optional[bool]
-    empresa_id: Optional[UUID]
+    empresa_cnpj: Optional[str]
 
 
-class SimplesNacionalShow(SimplesNacionalBase):
-    id: int
-    empresa: EmpresasView
+class SimplesNacionalView(SimplesNacionalBase):
+    id: UUID
     created_at: datetime
     updated_at: datetime
 
-    def dict(self, **kwargs):
-        kwargs['exclude'] = {'empresa_id'}
-        return super().dict(**kwargs)
-
-    def json(self, **kwargs):
-        kwargs['exclude'] = {'empresa_id'}
-        return super().json(**kwargs)
-
     class Config:
         orm_mode = True
+
+
+class SimplesNacionalFilter(DefaultQueryFilter):
+    opcao_simples: Optional[bool]
+    data_opcao_simples: Optional[datetime]
+    data_exclusao_simples: Optional[datetime]
+    opcao_mei: Optional[bool]
+    empresa_cnpj: Optional[str]
+    data_opcao_mei: Optional[datetime]
+    data_exclusao_mei: Optional[datetime]

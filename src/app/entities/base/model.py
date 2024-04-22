@@ -6,7 +6,6 @@ from datetime import datetime
 from uuid import uuid4 as uuid
 
 # ### Third-party deps
-from sqlalchemy import DateTime
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -23,7 +22,11 @@ class Base:
     
     __INDEX_SEQUENCE = "index_sequence"
 
+    __order_by = "created_at"
+    __skip = 0
+    __limit = 0
+
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, insert_default=uuid, unique=True)
 
-    created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False, insert_default=datetime.now)
-    updated_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False, insert_default=datetime.now, onupdate=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(nullable=False, insert_default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(nullable=False, insert_default=datetime.now, onupdate=datetime.now)

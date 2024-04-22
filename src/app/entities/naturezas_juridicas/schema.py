@@ -29,6 +29,7 @@ class NaturezasJuridicasUpdate(NaturezasJuridicasBase):
 
 class NaturezasJuridicasView(NaturezasJuridicasBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

@@ -6,7 +6,7 @@
 # ### Local deps
 from ...entities.base.repository import BaseRepo
 from .model import Socio
-from .schema import SociosView, SociosCreate, SociosUpdate
+from .schema import SociosView, SociosCreate, SociosUpdate, SociosFilter
 
 
 class SociosRepo(BaseRepo[Socio, SociosCreate, SociosUpdate]):

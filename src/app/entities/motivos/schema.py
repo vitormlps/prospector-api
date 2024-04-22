@@ -27,8 +27,9 @@ class MotivosUpdate(BaseModel):
     descricao: Optional[str] = Field(min_length=3)
 
 
-class MotivosShow(MotivosBase):
+class MotivosView(MotivosBase):
     id: UUID
+    descricao: str
     created_at: datetime
     updated_at: datetime
 

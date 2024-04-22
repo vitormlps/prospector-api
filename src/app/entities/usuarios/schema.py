@@ -36,6 +36,7 @@ class UsuariosUpdate(UsuariosBase):
 
 
 class UsuariosView(UsuariosBase):
+    id: UUID
     permissoes: PermissoesView
     created_at: datetime
     updated_at: datetime
