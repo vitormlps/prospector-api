@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     POSTGRES_PORT: str
     POSTGRES_DB: str
     POSTGRES_URI: Optional[PostgresDsn] = None
+    POPULATE_DB: bool = False
+    RESET_DB: bool = False
 
     @validator("POSTGRES_URI", pre=True)
     def assemble_db_connection(
@@ -64,20 +66,23 @@ class Settings(BaseSettings):
         )
 
     # STORAGE
+    RECEITA_FEDERAL_DATA_MAIN_URL: str
+    RECEITA_FEDERAL_MAIN_UPDATE_FIELD: str
     RECEITA_FEDERAL_DATA_REPOSITORY_URL: str
     RECEITA_FEDERAL_DATA_LAYOUT_URL: str
     
     DOWNLOADED_FILES_PATH: str
     EXTRACTED_FILES_PATH: str
+    ALLWAYS_EXTRACT: bool
+    FILTER_DATA: bool
 
     # SECURITY
     JWT_SECRET_KEY: str = secrets.token_urlsafe(32)
 
-    KEYCLOAK_BASE_URL: str
-    KEYCLOAK_REALM: str
-    KEYCLOAK_CLIENT_ID: str
-    KEYCLOAK_CLIENT_SECRET: str
-    KEYCLOAK_DISABLE: bool
+    # LOGGING
+    LOGGER_NAME: str
+    LOG_DIR: str
+    LOG_LEVEL: str
 
 
 def get_app_config():
