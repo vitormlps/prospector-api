@@ -1,15 +1,17 @@
-FROM python:3.11.7-slim-bookworm as build
+FROM --platform=linux/amd64 python:3.11.7-slim-bookworm as base
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-# ENV PYTHONPATH="/python-deps"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     apt-utils \
-    libpq-dev \
+    sudo \
+    gcc \
     python3-dev \
-    build-essential cargo 
+    libpq-dev 
+
+RUN export PATH=/usr/lib/postgresql/15/bin/:$PATH
 
 COPY ../requirements/* /requirements/
 RUN python3 -m pip install --upgrade pip setuptools wheel --no-cache-dir \

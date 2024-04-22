@@ -45,6 +45,9 @@ logs/
 licenses/
 database-volume/
 obfuscated/
+DOWNLOADED_FILES/
+EXTRACTED_FILES/
+SELECTED_FILES/
 
 # Environment files
 .env

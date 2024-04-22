@@ -1,44 +1,44 @@
 version: "3.8"
 
 services:
-  output-api:
-    container_name: output-api
+  prospector-api:
+    container_name: prospector-api
+    image: nunes-barcelos-prospector-api
+    privileged: true
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-    # restart: always
+      target: development
     ports:
-      - "8000:8000"
+      - 8000:8000
     volumes:
-      - ../:/api
+      - ../:/home/api
     environment:
-      - development
+      ENV: development
     env_file:
       - ../.env
+
+    shm_size: 16gb
+    stdin_open: true
+    tty: true # can see the input and output
     depends_on:
       database:
         condition: service_healthy
-    stdin_open: true # docker run -i
-    tty: true # docker run -t
     networks:
       - dev_network
 
   database:
     container_name: database
-    hostname: citrosuco_db
-    # image: postgres:15-bookworm
-    image: postgis/postgis:16-3.4
-    # restart: always
+    hostname: prospector_db
+    image: postgres:15-bookworm
     ports:
-      - "5432:5432"
-    expose:
-      - 5432
+      - 5432:5432
     env_file:
       - ../.env
     volumes:
       - ./database-volume:/var/lib/postgresql/data/
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d dev_citrosuco -U root"]
+      test: ["CMD-SHELL", "pg_isready -d dev_prospector -U root"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -48,3 +48,4 @@ services:
 networks:
   dev_network:
     name: dev_network
+    external: false
