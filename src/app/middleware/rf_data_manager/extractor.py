@@ -8,13 +8,18 @@ import os
 import zipfile
 
 # ### Local deps
+from app.helpers import Logger
 
 
 class DataExtractor:
     def __init__(self) -> None:
-        pass
+        self._logger = Logger().get_logger()
+        self._logger.debug("Initializing DataExtractor")
+
 
     def extract_files(self, download_path, extraction_path):
+        self._logger.info(f"Extracting files from {download_path} to {extraction_path}")
+
         with os.scandir(download_path) as files:
             for file in files:
                 if "pdf" not in file.path:
@@ -23,4 +28,6 @@ class DataExtractor:
 
 
     def start(self, download_path, extraction_path):
+        self._logger.debug("Starting DataExtractor")
+        
         self.extract_files(download_path, extraction_path)
