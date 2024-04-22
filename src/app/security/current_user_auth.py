@@ -7,7 +7,7 @@ from fastapi import Depends
 
 # ### Local deps
 # from .authentication import IdentityProvider
-from ..utils.error_handling import throw_auth_error
+from ..utils.exception_handlers import throw_auth_error
 
 
 

@@ -14,7 +14,7 @@ class TypeVars:
     Empresa = TypeVar("Empresa")
     EmpresasSocios = TypeVar("EmpresasSocios")
     CNAE = TypeVar("CNAE")
-    CNAEsSecundarios = TypeVar("CNAEsSecundarios")
+    CnaesSecundarios = TypeVar("CnaesSecundarios")
     FaixaEtaria = TypeVar("FaixaEtaria")
     RepresentanteLegal = TypeVar("RepresentanteLegal")
     Qualificacao = TypeVar("Qualificacao")

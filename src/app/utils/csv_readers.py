@@ -3,28 +3,16 @@
 
 # ### Built-in deps
 import csv
-from datetime import date
 
 # ### Third-party deps
-
 # ### Local deps
 
 
-def read_csv_file(csv_file, delimiter):
-    table = csv.DictReader(csv_file, delimiter=delimiter)
-    result = []
+def read_csv_file(csv_file_path, delimiter=";"):
+    result_table = []
 
-    for row in table:
-        _id = row["id"]
-        name = row['nome'] if len(row['nome']) > 0 else "Sem nome"
+    with open(csv_file_path, encoding="latin-1") as csv_file:
+        raw_table = csv.reader(csv_file, delimiter=delimiter)
+        result_table.extend(raw_table)
 
-        result.append({
-            'id': _id,
-            'name': name,
-            'field': row['field'],
-        })
-
-    if len(result) == 0:
-        return {"error": "No valid data found in the uploaded file."}
-
-    return result
+    return result_table

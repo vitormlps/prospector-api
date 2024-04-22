@@ -2,71 +2,98 @@
 # -*- coding: utf-8 -*-
 
 # ### Built-in deps
-import sys
-import pathlib as pl
+import datetime as dt
 import logging
-from logging import handlers
+import sys
+from logging.handlers import TimedRotatingFileHandler
+from pathlib import Path
 
 # ### Third-party deps
 # ### Local deps
+from ..utils.singleton import SingletonMeta
 
 
-class Logger():
-    logger = None
+# Thread-safe Singleton: https://refactoring.guru/design-patterns/singleton/python/example#example-1
+class Logger(metaclass=SingletonMeta):
+    """
+    A singleton utility class for setting up and configuring a logger with both console and file handlers.
 
-    @staticmethod
-    def get_logger():
-        return Logger.logger
+    This class simplifies the process of creating and configuring a logger for logging messages to the console and
+    a rotating log file.
 
-    @staticmethod
-    def setup_logger(app_name: str, env: str):
-        Logger.logger = logging.getLogger(app_name)
-
-        if env != "development":
-            Logger.logger.setLevel(logging.INFO)
-            log_format = Logger.set_info_formatter()
-
-        else:
-            Logger.logger.setLevel(logging.DEBUG)
-            log_format = Logger.set_debug_formatter()
-
-        Logger.set_console_handler(Logger.logger, log_format)
-        
-        Logger.set_file_handler(Logger.logger, log_format)
+    Args:
+        logger_name (str, optional): The name of the logger. Defaults to 'auditor'.
+        log_dir (str, optional): The directory where log files will be stored. Defaults to 'logs'.
+        log_level (str, optional): The log level (e.g., INFO, DEBUG, etc.). Defaults to None.
+    """
+    _instance = None
 
 
-    @staticmethod
-    def set_debug_formatter():
+    def __init__(self, logger_name = None, log_dir = None, log_level = None):
+        """
+        Initialize the Logger instance with the specified log name, directory, and log level.
+
+        Args:
+            logger_name (str, optional): The name of the logger.
+            log_dir (str, optional): The directory where log files will be stored.
+            log_level (str, optional): The log level (e.g., INFO, DEBUG, etc.).
+        """
+        self.logger = logging.getLogger(logger_name)
+        self._set_log_level(log_level)
+
+        log_format = self._set_log_formatter()
+        self._set_console_handler(self.logger, log_format)
+
+        self._set_log_dir(log_dir)
+        self._set_file_handler(self.logger, log_format, log_dir)
+
+
+    def _set_log_level(self, level: str):
+        """
+        Set the log level for the logger.
+
+        Args:
+            level (str): The log level (e.g., INFO, DEBUG, etc.).
+        """
+        self.logger.setLevel(level)
+
+
+    def _set_log_formatter(self):
         return logging.Formatter(
-            "%(asctime)s %(levelname)s [%(module)s.%(funcName)s:%(lineno)d] %(message)s"
+            '[%(asctime)s] %(levelname)s [%(threadName)s | %(module)s.%(funcName)s:%(lineno)d] %(message)s',
+            # "%(asctime)s %(levelname)s [%(pathname)s:%(funcName)s:%(lineno)d] %(message)s"
         )
 
-    @staticmethod
-    def set_info_formatter():
-        return logging.Formatter(
-            "%(asctime)s %(message)s"
-        )
 
-
-    @staticmethod
-    def set_console_handler(logger, log_format):
+    def _set_console_handler(self, logger, log_format):
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(log_format)
 
         logger.addHandler(console_handler)
 
 
-    @staticmethod
-    def set_file_handler(logger, log_format):
-        log_dir = pl.Path("logs").expanduser().resolve()
+    def _set_log_dir(self, log_dir):
+        log_dir = Path(log_dir).expanduser().resolve()
         log_dir.mkdir(parents=True, exist_ok=True)
 
-        file_handler = handlers.TimedRotatingFileHandler(
-            log_dir / "auditor.log",
-            when="midnight",
+
+    def _set_file_handler(self, logger, log_format, log_dir: str):
+        file_handler = TimedRotatingFileHandler(
+            f"{log_dir}/{logger.name}.log", 
+            when='midnight', 
+            atTime=dt.time(hour=1),
             utc=True,
         )
-
         file_handler.setFormatter(log_format)
 
         logger.addHandler(file_handler)
+
+
+    def get_logger(self):
+        """
+        Get the singleton logger instance.
+
+        Returns:
+            logging.Logger: The singleton logger instance.
+        """
+        return self.logger
