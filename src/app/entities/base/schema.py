@@ -16,8 +16,8 @@ class DefaultQueryFilter(BaseModel):
     id: Optional[UUID]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
-    skip: Optional[int] = Field(default=0)
-    limit: Optional[int] = Field(default=0)
+    skip: Optional[int] = 0
+    limit: Optional[int] = 0
 
 
 class BaseFilter(DefaultQueryFilter):
