@@ -26,8 +26,9 @@ Mais informações sobre o projeto podem ser encontradas [aqui](https://violet-w
 
 ### Exemplo de dado retornado
 
+Endpoint: /empresas (GET)
+
 ```json
-// Endpoint: /empresas (GET)
 [
 	{
 		"id": "3f39ecc3-d30f-4c47-8aee-a788873c3762",
